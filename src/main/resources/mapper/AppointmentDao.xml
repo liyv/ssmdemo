@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liyv.ssm.dao.AppointmentDao">
+    <insert id="insertAppointment">
+--       ignore 主键冲突，报错
+        insert ignore into appointment (book_id,student_id)
+      values (#{bookId},#{studentId})
+    </insert>
+    <select id="queryByKeyWithBook" resultType="Appointment">
+--         如何告诉MyBatis把结果映射到 Appointment 同时映射到book 属性
+--  可以自由控制 SQL
+      select a.book_id,a.student_id,a.appoint_time,b.book_id "book.book_id",b.name "book.name",
+      b.number "book.number"
+      from appointment a
+      inner join book b on a.book_id = b.book_id
+      where a.book_id=#{bookId} and a.student_id=#{studentId}
+    </select>
+</mapper>

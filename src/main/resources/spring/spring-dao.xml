@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--配置 mybatis 过程-->
+    <!--1. 配置数据库相关参数 properties的属性 -->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!--2.数据库连接池-->
+    <!--dataSource 将会如何使用，由谁使用-->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <!--配置连接池属性-->
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <!--连接初始值，连接池启动时创建的连接数量的初始值，默认值是0-->
+        <property name="initialSize" value="3"/>
+        <!--最小空闲值，当空闲的连接数少于阀值时，连接池就会预申请一些连接，以免洪峰来时来不及申请，默认值是0，就相当于有个保底的数量-->
+        <property name="minIdle" value="3"/>
+        <!--最大空闲值，当经过一个高峰时间后，连接池可以慢慢释放一些不用的连接，一直减少到 maxIdle为止，0是无限制，默认值是8-->
+        <property name="maxIdle" value="5"/>
+        <!--连接池的最大值，同一时间可以从池分配的最大连接数量，0是无限制，默认值是8-->
+        <property name="maxTotal" value="20"/>
+    </bean>
+    <!--3.配置 SqlSessionFactory 对象-->
+    <!--是需要由 Spring 创建一次么-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--注入数据库连接池-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置MyBatis 全局配置文件：mybatis-config.xml-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- 扫描entity 包，使用别名-->
+        <property name="typeAliasesPackage" value="com.liyv.ssm.entity"/>
+        <!--扫描sql 配置文件：mapper需要的xml文件 这是什么意思-->
+        <property name="mapperLocations" value="classpath:mapper/*.xml"/>
+    </bean>
+
+    <!--4. 配置扫描DAO 接口，动态实现DAO 接口，注入到 Spring 容器中-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--注入 sqlSessionFactory 这是什么意思,为什么使用的是 value,而不是 ref-->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <!-- 给出需要扫描 DAO 接口包-->
+        <property name="basePackage" value="com.liyv.ssm.dao"/>
+    </bean>
+</beans>
