@@ -27,7 +27,7 @@
         <property name="maxTotal" value="20"/>
     </bean>
     <!--3.配置 SqlSessionFactory 对象-->
-    <!--是需要由 Spring 创建一次么-->
+    <!--是需要由 Spring 创建一次么 ,这里用到的是 Spring 通过工厂 bean 自定义实例化逻辑 实例化的并不是这里指定SqlSessionFactoryBean-->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <!--注入数据库连接池-->
         <property name="dataSource" ref="dataSource"/>
