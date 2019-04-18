@@ -42,7 +42,8 @@ public class BookController {
 
         Book book = bookService.getById(bookId);
         if (null == book) {
-            return "forward:/book/list";
+//            return "forward:/book/list";
+            return "redirect:/appoint/list2";
         }
         model.addAttribute("book", book);
         return "detail";
