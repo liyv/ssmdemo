@@ -44,7 +44,7 @@ public class SeckillServiceTest extends BaseTest {
     @Test
     public void testExecuteSeckill() throws Exception {
         long id = 1000;
-        long phone = 13035127350L;
+        long phone = 13035127351L;
         String md5 = "20104a9b3c667f3899cd1f342af78957";
         SeckillExecution execution = seckillService.executeSecKill(id, phone, md5);
         logger.info("result={}", execution);
