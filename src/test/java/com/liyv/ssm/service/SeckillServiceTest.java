@@ -50,4 +50,17 @@ public class SeckillServiceTest extends BaseTest {
         logger.info("result={}", execution);
 
     }
+
+    @Test
+    public void executeSecKillProcedure() {
+        long seckillId = 1001;
+        long phone = 13035127351L;
+        Exposer exposer = seckillService.exportSeckillUrl(seckillId);
+        String md5 = null;
+        if (exposer.isExposed()) {
+            md5 = exposer.getMd5();
+            SeckillExecution execution = seckillService.executeSecKillProcedure(seckillId, phone, md5);
+            System.out.println(execution.getStateInfo());
+        }
+    }
 }

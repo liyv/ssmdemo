@@ -1,11 +1,9 @@
 package com.liyv.ssm.dao.cache;
 
+import com.dyuproject.protostuff.LinkedBuffer;
+import com.dyuproject.protostuff.ProtostuffIOUtil;
+import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.liyv.ssm.entity.Seckill;
-import io.protostuff.LinkBuffer;
-import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtostuffIOUtil;
-import io.protostuff.Schema;
-import io.protostuff.runtime.RuntimeSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
@@ -13,14 +11,14 @@ import redis.clients.jedis.JedisPool;
 
 public class RedisDao {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(RedisDao.class);
     private JedisPool jedisPool;
 
     public RedisDao(String ip, int port) {
         jedisPool = new JedisPool(ip, port);
     }
 
-    private Schema<Seckill> schema = RuntimeSchema.createFrom(Seckill.class);
+    private RuntimeSchema<Seckill> schema = RuntimeSchema.createFrom(Seckill.class);
 
     public Seckill getSeckill(long seckillId) {
         //redis 操作逻辑
@@ -53,6 +51,7 @@ public class RedisDao {
     public String putSeckill(Seckill seckill) {
         //序列化
         //object seckill -> byte[]
+
         try {
             Jedis jedis = jedisPool.getResource();
             try {

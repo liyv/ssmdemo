@@ -71,7 +71,8 @@ public class SeckillController {
     public SeckillResult<SeckillExecution> execute(@PathVariable("seckillId") Long seckillId,
                                                    @PathVariable("md5") String md5, @CookieValue(value = "killPhone") Long phone) {
         try {
-            SeckillExecution execution = seckillService.executeSecKill(seckillId, phone, md5);
+            //存储过程调用
+            SeckillExecution execution = seckillService.executeSecKillProcedure(seckillId, phone, md5);
             return new SeckillResult<SeckillExecution>(true, execution);
         } catch (RepeatKillException e1) {
             SeckillExecution execution = new SeckillExecution(seckillId, SeckillStateEnum.REPEAT_KILL);
