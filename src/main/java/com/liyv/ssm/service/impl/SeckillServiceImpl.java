@@ -2,6 +2,7 @@ package com.liyv.ssm.service.impl;
 
 import com.liyv.ssm.dao.SeckillDao;
 import com.liyv.ssm.dao.SuccessKilledDao;
+import com.liyv.ssm.dao.cache.RedisDao;
 import com.liyv.ssm.dto.Exposer;
 import com.liyv.ssm.dto.SeckillExecution;
 import com.liyv.ssm.entity.Seckill;
@@ -24,12 +25,12 @@ import java.util.List;
 @Service
 public class SeckillServiceImpl implements SeckillService {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private SeckillDao seckillDao;
-
     @Autowired
     private SuccessKilledDao successKilledDao;
+    @Autowired
+    private RedisDao redisDao;
 
     //**md5盐值 用于混淆
     private final String slat = "fjie*&^&*#^&fjkDFEFDFDejk";
@@ -43,10 +44,19 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     public Exposer exportSeckillUrl(long seckillId) {
-        Seckill seckill = seckillDao.queryById(seckillId);
-        if (seckill == null) {
-            return new Exposer(false, seckillId);
+        //优化点：缓存优化;超时的基础上维护一致性
+        //1.访问 redis
+        Seckill seckill = redisDao.getSeckill(seckillId);
+        if (null == seckill) {
+            //2:访问数据库
+            seckill = seckillDao.queryById(seckillId);
+            if (seckill == null) {
+                return new Exposer(false, seckillId);
+            } else {
+                redisDao.putSeckill(seckill);
+            }
         }
+
 
         Date startTime = seckill.getStartTime();
         Date endTime = seckill.getEndTime();
